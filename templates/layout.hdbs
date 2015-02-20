@@ -23,21 +23,7 @@
       <a href="#">Automations</a>
     </li>
   </ul>
-  <div class="filters well">
-    <form class="form-inline">
-      <label>Order by: 
-        <select class="sort">
-          <option value="created">created</option>
-          <option value="updated">updated</option>
-        </select>
-      </label>
-      <label>Filter to: 
-        <select class="filter">
-          <option value="active">active</option>
-          <option value="inactive">inactive</option>
-        </select>
-      </label>
-    </form>
+  <div class="filters well hide">
 
   </div>
 

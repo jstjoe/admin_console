@@ -4,17 +4,23 @@
   <table class="table table-bordered">
     <thead>
       <tr class="table_header">
-        <th>Title</th>
-        <th>Active?</th>
-        <th>Created</th>
-        <th>Updated</th>
+        <th class="title">Title</th>
+        <th class="created">Created</th>
+        <th class="updated">Updated</th>
+        <th class="active">Active?</th>
       </tr>
     </thead>
     <tbody>
       {{#each macros}}
       <tr class="macro imploded" id="{{id}}">
-        <td class="name">
+        <td class="title">
           <a href="/agent/admin/macros/edit/{{id}}">{{title}}</a>
+        </td>
+        <td class="created">
+          {{created_at}}
+        </td>
+        <td class="updated">
+          {{updated_at}}
         </td>
         <td class="active">
           <button data-activate-link="/rules/{{id}}/activate" data-activated="{{#if active}}{{active}}{{else}}false{{/if}}" class="btn activate activate_macro">
@@ -24,12 +30,6 @@
               Activate
             {{/if}}
           </button>
-        </td>
-        <td class="created">
-          {{created_at}}
-        </td>
-        <td class="updated">
-          {{updated_at}}
         </td>
       </tr>
       {{/each}}

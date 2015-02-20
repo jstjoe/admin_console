@@ -7,7 +7,9 @@
       'app.activated':'onActivated',
       // override tabs
       'click .tab':'tabClicked',
-      'click .activate_macro':'activateMacro'
+
+      'click .activate_macro':'activateMacro',
+      'click button.filter_macros':'filterMacros'
     },
     requests: {
       getAgents: function(page) {
@@ -83,6 +85,8 @@
 
     loadMacros: function() {
       // call paginate helper
+      this.$('div.filters').html( this.renderTemplate('_macro_filters') );
+      this.$('div.filters').show();
       var startDate;
       var macros = this.paginate({
         request : 'getMacros',
@@ -102,13 +106,33 @@
     },
     parseMacros: function(macros) {
       // sort the results
-      var sortedMacros = _.sortBy(macros, 'updated_at' ).reverse();
+      var sortedMacros = _.sortBy(macros, 'updated_at').reverse();
       // convert the date strings
-      sortedMacros = this.convertDates(sortedMacros);
+      this.macros = this.convertDates(sortedMacros);
       // check that the user is still on the given tab (to handle asychronicity)
       if (this.tab == 'macros') {
         this.switchTo('macros', {
-          macros: sortedMacros
+          macros: this.macros
+        });
+      }
+    },
+    filterMacros: function(e) {
+      e.preventDefault();
+      var sort = this.$('select.sort').val();
+      var filter = this.$('select.filter').val();
+      this.filteredMacros = _.sortBy(this.macros, sort).reverse();
+      if(filter == 'active') {
+        this.filteredMacros = _.filter(this.filteredMacros, function(macro) {
+          return macro.active;
+        });
+      } else if(filter == 'inactive') {
+        this.filteredMacros = _.filter(this.filteredMacros, function(macro) {
+          return !macro.active;
+        });
+      }
+      if (this.tab == 'macros') {
+        this.switchTo('macros', {
+          macros: this.filteredMacros
         });
       }
     },

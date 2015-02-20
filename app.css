@@ -16,6 +16,7 @@ ul.nav-tabs:first-child {
 }
 tr > td {
   vertical-align: middle;
+
 }
 div.filters {
   margin-bottom: 20px;
@@ -25,8 +26,12 @@ div.filters {
 button.activate {
   width: 120px;
 }
+tr.macro > td.active {
+  width:120px;
+}
 // Agents
 .profile_pic {
   max-height: 80px;
   max-width: 80px;
 }
+

@@ -1,0 +1,16 @@
+<form class="form-inline macro_filters">
+  <label>Order by: 
+    <select class="sort">
+      <option value="created">created</option>
+      <option value="updated">updated</option>
+    </select>
+  </label>
+  <label>Filter to: 
+    <select class="filter">
+      <option>-</option>
+      <option value="active">active</option>
+      <option value="inactive">inactive</option>
+    </select>
+  </label>
+  <button class="btn btn-primary filter_macros pull-right">Go</button>
+</form>
