@@ -1,10 +1,48 @@
 <header>
   <span class="logo"/>
-  <h3>{{setting "name"}}</h3>
+  <h3>{{setting "name"}}<small class="muted pull-right ">by <a href="http://joem.cc" class="muted">Joe McCarron</a></small></h3>
 </header>
+<div class="app_frame">
+  <ul class="nav nav-pills">
+    <li class="tab" id="users">
+      <a href="#">Users</a>
+    </li>
+    <li class="tab" id="sessions">
+      <a href="#">Sessions</a>
+    </li>
+    <li class="tab active" id="agents">
+      <a href="#">Agents</a>
+    </li>
+    <li class="tab" id="macros">
+      <a href="#">Macros</a>
+    </li>
+    <li class="tab" id="triggers">
+      <a href="#">Triggers</a>
+    </li>
+    <li class="tab" id="automations">
+      <a href="#">Automations</a>
+    </li>
+  </ul>
+  <div class="filters well">
+    <form class="form-inline">
+      <label>Order by: 
+        <select class="sort">
+          <option value="created">created</option>
+          <option value="updated">updated</option>
+        </select>
+      </label>
+      <label>Filter to: 
+        <select class="filter">
+          <option value="active">active</option>
+          <option value="inactive">inactive</option>
+        </select>
+      </label>
+    </form>
+
+  </div>
+
+</div>
 <section data-main/>
 <footer>
-  <a href="mailto:{{author.email}}">
-    {{author.name}}
-  </a>
+  
 </footer>

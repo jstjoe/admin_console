@@ -1,0 +1,32 @@
+.nav-pills .active>a, .nav-pills .active>a:hover {
+  background-color: #78A300;
+}
+// a {
+//   color: black;
+// }
+div.tab_content {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+// li.tab_first {
+//   padding-left: 10px;
+// }
+ul.nav-tabs:first-child {
+  padding-left: 10px;
+}
+tr > td {
+  vertical-align: middle;
+}
+div.filters {
+  margin-bottom: 20px;
+}
+
+// Macros
+button.activate {
+  width: 120px;
+}
+// Agents
+.profile_pic {
+  max-height: 80px;
+  max-width: 80px;
+}
