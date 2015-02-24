@@ -1,4 +1,4 @@
-<div class="agents_table">
+<div class="users_table">
   <table class="table table-bordered">
     <thead>
       <tr class="table_header">
@@ -10,7 +10,7 @@
       </tr>
     </thead>
     <tbody>
-      {{#each agents}}
+      {{#each users}}
       <tr class="agent imploded" id="{{id}}">
         <td class="photo">
           {{#if photo.content_url}}
@@ -39,8 +39,7 @@
       {{/each}}
     </tbody>
   </table>
-  <a class="btn" href="{{export_url}}" target="blank" download="agents.csv">Export</a>
-  {{!-- <a download="agents.csv" href="data:application/octet-stream,ID%2CTitle%2CAuthor%2CAnswer%2CCommunity%2CVote%20Score%2CVote%20Count%2CAnswer%20Count%2CFollower%20Count%2CCreated%2CUpdated%2CDetails%0A{{#encodedAgents}}#{{id}}%2C{{title}}%2C{{author}}%2C{{#if accepted_answer_id}}{{accepted_answer_id}}{{else}}-{{/if}}%2C{{community}}%2C{{vote_sum}}%2C{{vote_count}}%2C{{answer_count}}%2C{{follower_count}}%2C{{created_at}}%2C{{updated_at}}%2C%22{{details}}%22%0A{{/encodedAgents}}" class="btn pull-right">
+  {{!-- <a download="users.csv" href="data:application/octet-stream,ID%2CTitle%2CAuthor%2CAnswer%2CCommunity%2CVote%20Score%2CVote%20Count%2CAnswer%20Count%2CFollower%20Count%2CCreated%2CUpdated%2CDetails%0A{{#encodedUsers}}#{{id}}%2C{{title}}%2C{{author}}%2C{{#if accepted_answer_id}}{{accepted_answer_id}}{{else}}-{{/if}}%2C{{community}}%2C{{vote_sum}}%2C{{vote_count}}%2C{{answer_count}}%2C{{follower_count}}%2C{{created_at}}%2C{{updated_at}}%2C%22{{details}}%22%0A{{/encodedUsers}}" class="btn pull-right">
     <i class="icon-download"></i> Download CSV
   </a> --}}
   <br><br>

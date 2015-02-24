@@ -1,3 +1,6 @@
+/*global Blob*/
+/*global URL*/
+/*global File*/
 (function() {
 
   return {
@@ -9,9 +12,16 @@
       'click .tab':'tabClicked',
 
       'click .activate_macro':'activateMacro',
-      'click button.filter_macros':'filterMacros'
+      'click button.filter_macros':'filterMacros',
+
+      'click button.kill_session':'killSession'
     },
     requests: {
+      getUsers: function(page) {
+        return {
+          url: helpers.fmt('/api/v2/users?role[]=end-user&sort_order=desc&include=identities,roles,organizations&page=%@', page),
+        };
+      },
       getAgents: function(page) {
         return {
           url: helpers.fmt('/api/v2/users?role[]=agent&role[]=admin&sort_order=desc&include=identities,roles,groups&page=%@', page),
@@ -25,6 +35,17 @@
       activate: function(link) {
         return {
           url: link
+        };
+      },
+      getSessions: function(page) {
+        return {
+          url: helpers.fmt('/api/v2/sessions?page=%@', page),
+        };
+      },
+      killSession: function(url) {
+        return {
+          url: url,
+          type: 'delete'
         };
       }
     },
@@ -42,18 +63,55 @@
       this.$('#' + tab).addClass('active');
       this.switchTo('spinner');// show the loading template for now
       // detect the tab and call the appropriate function (or just show a template)
-      if (tab == 'agents') {
+      if(tab == 'users') {
+        this.tab = 'users';
+        this.loadUsers();
+      } else if (tab == 'agents') {
         this.tab = 'agents';
         this.loadAgents();
       } else if(tab == 'macros') {
         this.tab = 'macros';
         this.loadMacros();
+      } else if(tab == 'sessions') {
+        this.tab = 'sessions';
+        this.loadSessions();
+
       } else {
         // render an error whenever an unsupported tab is chosen
         this.switchTo('error');
       }
     },
+    // Users
+    loadUsers: function() {
+      // call paginate helper
+      var startDate;
+      var users = this.paginate({
+        request : 'getUsers',
+        entity  : 'users',
+        page    : 1
+      });
+      // handle the response once the promise resolves
+      users.done(_.bind(function(users){
+        if(users.length !== 0) {
+          // do something with results
+          this.parseUsers(users);
+        } else {
+          // hide the loader and show an error
+        }
+      }, this));
 
+    },
+    parseUsers: function(users) {
+      var sortedUsers = _.sortBy(users, 'created_at' );
+      if (this.tab == 'users') {
+        console.dir(sortedUsers);
+        this.switchTo('users', {
+          users: sortedUsers
+        });
+      }
+      
+    },
+    // Agents
     loadAgents: function() {
       // call paginate helper
       var startDate;
@@ -74,10 +132,21 @@
 
     },
     parseAgents: function(agents) {
+      // default sort
       var sortedAgents = _.sortBy(agents, 'created_at' );
+      this.agents = this.convertDates(sortedAgents);
+      // create file URL
+      var data = this.renderTemplate('_agents_export', {
+        agents: this.agents
+      });
+      var file = new File([data], 'agents.csv');
+      var url = URL.createObjectURL(file);
+
+      console.log(url);
       if (this.tab == 'agents') {
         this.switchTo('agents', {
-          agents: sortedAgents
+          agents: this.agents,
+          export_url: url
         });
       }
       
@@ -153,12 +222,63 @@
         }
       });
     },
+    // # Sessions
+    loadSessions: function() {
+      // this.$('div.filters').html( this.renderTemplate('_macro_filters') );
+      this.$('div.filters').hide();
+      // call paginate helper
+
+      var sessions = this.paginate({
+        request : 'getSessions',
+        entity  : 'sessions',
+        page    : 1
+      });
+      // handle the response once the promise resolves
+      sessions.done(_.bind(function(sessions){
+        if(sessions.length !== 0) {
+          // do something with results
+          this.parseSessions(sessions);
+        } else {
+          // hide the loader and show an error
+
+        }
+      }, this));
+    },
+    parseSessions: function(sessions) {
+      // sort the results
+      var sortedSessions = _.sortBy(sessions, 'last_seen_at').reverse();
+      // convert the date strings
+      this.sessions = this.convertDates(sortedSessions);
+      // check that the user is still on the given tab (to handle asychronicity)
+      if (this.tab == 'sessions') {
+        this.switchTo('sessions', {
+          sessions: this.sessions
+        });
+      }
+    },
+    killSession: function(e) {
+      e.preventDefault();
+      console.dir(e);
+      var url = e.currentTarget.dataset.killUrl;
+      console.log(url);
+      this.ajax('killSession', url).done(function(response) {
+        services.notify('Session killed!');
+        this.loadSessions();
+      });
+    },
+
 
     // ## Helpers
     convertDates: function(results) {
       _.each(results, function(result) {
         result.created_at = new Date(result.created_at).toLocaleString();
         result.updated_at = new Date(result.updated_at).toLocaleString();
+
+        if(result.authenticated_at) {
+          result.authenticated_at = new Date(result.authenticated_at).toLocaleString();
+          result.last_seen_at = new Date(result.last_seen_at).toLocaleString();
+        }
+        
       });
       return results;
     },

@@ -1,8 +1,8 @@
 <form class="form-inline macro_filters">
   <label>Order by: 
     <select class="sort">
-      <option value="created">created</option>
       <option value="updated">updated</option>
+      <option value="created">created</option>
     </select>
   </label>
   <label>Filter to: 

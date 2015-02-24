@@ -4,11 +4,11 @@
 </header>
 <div class="app_frame">
   <ul class="nav nav-pills">
-    <li class="tab" id="users">
-      <a href="#">Users</a>
-    </li>
     <li class="tab" id="sessions">
       <a href="#">Sessions</a>
+    </li>
+    <li class="tab" id="users">
+      <a href="#">End-Users</a>
     </li>
     <li class="tab active" id="agents">
       <a href="#">Agents</a>
@@ -16,12 +16,12 @@
     <li class="tab" id="macros">
       <a href="#">Macros</a>
     </li>
-    <li class="tab" id="triggers">
+    {{!-- <li class="tab" id="triggers">
       <a href="#">Triggers</a>
     </li>
     <li class="tab" id="automations">
       <a href="#">Automations</a>
-    </li>
+    </li> --}}
   </ul>
   <div class="filters well hide">
 

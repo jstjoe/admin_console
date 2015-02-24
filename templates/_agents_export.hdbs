@@ -1,0 +1,3 @@
+Name,Tags,Created,Updated
+{{#agents}}"{{name}}","{{tags}}","{{created_at}}","{{updated_at}}"
+{{/agents}}
