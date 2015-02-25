@@ -19,12 +19,17 @@
     requests: {
       getUsers: function(page) {
         return {
-          url: helpers.fmt('/api/v2/users?role[]=end-user&sort_order=desc&include=identities,roles,organizations&page=%@', page),
+          url: helpers.fmt('/api/v2/users?role[]=end-user&sort_order=desc&include=organizations&page=%@', page),
         };
       },
       getAgents: function(page) {
         return {
-          url: helpers.fmt('/api/v2/users?role[]=agent&role[]=admin&sort_order=desc&include=identities,roles,groups&page=%@', page),
+          url: helpers.fmt('/api/v2/users?role[]=agent&role[]=admin&sort_order=desc&include=groups&page=%@', page),
+        };
+      },
+      getGroupMemberships: function(page) {
+        return {
+          url: helpers.fmt('/api/v2/group_memberships.json', page)
         };
       },
       getMacros: function(page) {
@@ -83,9 +88,10 @@
     },
     // Users
     loadUsers: function() {
+      this.$('div.filters').hide();
       // call paginate helper
       var startDate;
-      var users = this.paginate({
+      var users = this._paginate({
         request : 'getUsers',
         entity  : 'users',
         page    : 1
@@ -94,7 +100,7 @@
       users.done(_.bind(function(users){
         if(users.length !== 0) {
           // do something with results
-          this.parseUsers(users);
+          this.parseUsers(users.entity);
         } else {
           // hide the loader and show an error
         }
@@ -103,35 +109,76 @@
     },
     parseUsers: function(users) {
       var sortedUsers = _.sortBy(users, 'created_at' );
+      this.users = this.convertDates(sortedUsers);
       if (this.tab == 'users') {
-        console.dir(sortedUsers);
         this.switchTo('users', {
-          users: sortedUsers
+          users: this.users
         });
       }
       
     },
     // Agents
     loadAgents: function() {
+      this.$('div.filters').hide();
       // call paginate helper
       var startDate;
-      var agents = this.paginate({
+      var results = this._paginate({
         request : 'getAgents',
         entity  : 'users',
-        page    : 1
+        page    : 1,
+        sideload: 'groups'
       });
       // handle the response once the promise resolves
-      agents.done(_.bind(function(agents){
-        if(agents.length !== 0) {
+      results.done(_.bind(function(results){
+        if(results.length !== 0) {
           // do something with results
-          this.parseAgents(agents);
+          console.dir(results.entity);
+          console.dir(results.sideload);
+
+          this.matchGroups(results.entity, results.sideload);
         } else {
           // hide the loader and show an error
         }
       }, this));
 
+
+
+    },
+    matchGroups: function(agents, groups) {
+      // handle groups sideload
+      var memberships = this._paginate({
+        request: 'getGroupMemberships',
+        entity: 'group_memberships',
+        page: 1
+      });
+      memberships.done(_.bind(function(memberships){
+        if(memberships.length !== 0) {
+          _.each(agents, function(agent) {
+            // nest the membership objects in the agent object
+            agent.memberships = _.filter(memberships.entity, function(membership) {
+              return membership.user_id == agent.id;
+            });
+            // nest the group ids from the agent's nested memberships
+            agent.group_ids = _.map(agent.memberships, function(membership){
+              return membership.group_id;
+            });
+            // nest the group names from the agent's nested group IDs
+            agent.groups = _.filter(groups, function(group) {
+              return _.contains(agent.group_ids, group.id);  // group.id == agent.membership_id;
+            });
+          }.bind(this));
+          console.dir(agents);
+
+          // when done
+          this.parseAgents(agents);
+        } else {
+          // hide the loader and show an error
+        }
+      }, this));
     },
     parseAgents: function(agents) {
+      
+
       // default sort
       var sortedAgents = _.sortBy(agents, 'created_at' );
       this.agents = this.convertDates(sortedAgents);
@@ -142,7 +189,6 @@
       var file = new File([data], 'agents.csv');
       var url = URL.createObjectURL(file);
 
-      console.log(url);
       if (this.tab == 'agents') {
         this.switchTo('agents', {
           agents: this.agents,
@@ -157,7 +203,7 @@
       this.$('div.filters').html( this.renderTemplate('_macro_filters') );
       this.$('div.filters').show();
       var startDate;
-      var macros = this.paginate({
+      var macros = this._paginate({
         request : 'getMacros',
         entity  : 'macros',
         page    : 1
@@ -166,7 +212,7 @@
       macros.done(_.bind(function(macros){
         if(macros.length !== 0) {
           // do something with results
-          this.parseMacros(macros);
+          this.parseMacros(macros.entity);
         } else {
           // hide the loader and show an error
 
@@ -228,7 +274,7 @@
       this.$('div.filters').hide();
       // call paginate helper
 
-      var sessions = this.paginate({
+      var sessions = this._paginate({
         request : 'getSessions',
         entity  : 'sessions',
         page    : 1
@@ -237,7 +283,7 @@
       sessions.done(_.bind(function(sessions){
         if(sessions.length !== 0) {
           // do something with results
-          this.parseSessions(sessions);
+          this.parseSessions(sessions.entity);
         } else {
           // hide the loader and show an error
 
@@ -284,10 +330,19 @@
     },
     paginate: function(a) {
       var results = [];
+      var sideloads = {};
+
       var initialRequest = this.ajax(a.request, a.page);
       // create and return a promise chain of requests to subsequent pages
       var allPages = initialRequest.then(function(data){
         results.push(data[a.entity]);
+
+        _.each(a.sideloads, function(sideload) { // test pushing sideload data TODO this should loop over a.sideloads
+          sideloads[ sideload ] = data[ sideload ];
+        }.bind(this));
+        console.dir(sideloads);
+
+
         var nextPages = [];
         var pageCount = Math.ceil(data.count / 100);
         for (; pageCount > 1; --pageCount) {
@@ -300,15 +355,71 @@
                           .map(function(item){ return item[a.entity]; })
                           .value();
           results.push(entities);
+
+          // test
+          _.each(a.sideloads, function(sideload) {
+            var more = _.chain(arguments)
+                          .flatten()
+                          .filter(function(item){ return (_.isObject(item) && _.has(item, sideload)); })
+                          .map(function(item){ return item[sideload]; })
+                          .value();
+            _.extend(sideloads[ sideload ], more); //TODO pass a real object
+          }.bind(this));
+          // end test
+          
         }).then(function(){
-          return _.chain(results)
-                  .flatten()
-                  .compact()
-                  .value();
+          var response = {
+            results: results,
+            sideloads: sideloads
+          };
+          return response;
         });
       });
       return allPages;
-    }
-  };
+    },
 
+    _paginate: function(a) {
+      var results = {
+        "entity":[],
+        "sideload":[]
+      };
+      var initialRequest = this.ajax(a.request, a.id, a.page);
+      // create and return a promise chain of requests to subsequent pages
+      var allPages = initialRequest.then(function(data) {
+          results.entity.push(data[a.entity]);
+          results.sideload.push(data[a.sideload]);
+          var nextPages = [];
+          var pageCount = Math.ceil(data.count / 100);
+          for (; pageCount > 1; --pageCount) {
+              nextPages.push(this.ajax(a.request, a.id, pageCount));
+          }
+          return this.when.apply(this, nextPages).then(function() {
+              var entities = _.chain(arguments)
+                  .flatten()
+                  .filter(function(item) {
+                      return (_.isObject(item) && _.has(item, a.entity));
+                  })
+                  .map(function(item) {
+                      return item[a.entity];
+                  })
+                  .value();
+              results.entity.push(entities);
+          }).then(function() {
+              var neat_entity =  _.chain(results.entity)
+                  .flatten()
+                  .compact()
+                  .value();
+              results.entity = neat_entity;
+              var neat_sideload = _.chain(results.sideload)
+                .flatten()
+                .compact()
+                .value();
+              results.sideload = neat_sideload;
+              return results;
+          });
+      });
+      return allPages;
+    }
+
+  };
 }());
