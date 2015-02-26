@@ -108,8 +108,10 @@
 
     },
     parseUsers: function(users) {
-      var sortedUsers = _.sortBy(users, 'created_at' );
-      this.users = this.convertDates(sortedUsers);
+      // default sort
+      this.users = this.convertDates( _.sortBy(users, 'created_at' ) );
+      // TODO build export
+
       if (this.tab == 'users') {
         this.switchTo('users', {
           users: this.users
@@ -177,11 +179,8 @@
       }, this));
     },
     parseAgents: function(agents) {
-      
-
       // default sort
-      var sortedAgents = _.sortBy(agents, 'created_at' );
-      this.agents = this.convertDates(sortedAgents);
+      this.agents = this.convertDates( _.sortBy(agents, 'created_at' ) );
       // create file URL
       var data = this.renderTemplate('_agents_export', {
         agents: this.agents
@@ -221,9 +220,9 @@
     },
     parseMacros: function(macros) {
       // sort the results
-      var sortedMacros = _.sortBy(macros, 'updated_at').reverse();
-      // convert the date strings
-      this.macros = this.convertDates(sortedMacros);
+      this.macros = this.convertDates( _.sortBy(macros, 'updated_at').reverse() );
+      // TODO build export
+
       // check that the user is still on the given tab (to handle asychronicity)
       if (this.tab == 'macros') {
         this.switchTo('macros', {
@@ -291,10 +290,9 @@
       }, this));
     },
     parseSessions: function(sessions) {
-      // sort the results
-      var sortedSessions = _.sortBy(sessions, 'last_seen_at').reverse();
-      // convert the date strings
-      this.sessions = this.convertDates(sortedSessions);
+      this.sessions = this.convertDates( _.sortBy(sessions, 'last_seen_at').reverse() );
+      // TODO build export
+      // TODO get user names
       // check that the user is still on the given tab (to handle asychronicity)
       if (this.tab == 'sessions') {
         this.switchTo('sessions', {
@@ -383,7 +381,7 @@
         "entity":[],
         "sideload":[]
       };
-      var initialRequest = this.ajax(a.request, a.id, a.page);
+      var initialRequest = this.ajax(a.request, a.page);
       // create and return a promise chain of requests to subsequent pages
       var allPages = initialRequest.then(function(data) {
           results.entity.push(data[a.entity]);
@@ -391,7 +389,7 @@
           var nextPages = [];
           var pageCount = Math.ceil(data.count / 100);
           for (; pageCount > 1; --pageCount) {
-              nextPages.push(this.ajax(a.request, a.id, pageCount));
+              nextPages.push(this.ajax(a.request, pageCount));
           }
           return this.when.apply(this, nextPages).then(function() {
               var entities = _.chain(arguments)
