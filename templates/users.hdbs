@@ -5,6 +5,7 @@
         <th>Photo</th>
         <th>Name</th>
         <th>Tags</th>
+        <th>Status</th>
         <th>Created</th>
         <th>Updated</th>
       </tr>
@@ -28,6 +29,10 @@
           {{#each tags}}
               <span class="label">{{this}}</span>
           {{/each}}
+        </td>
+        <td class="active">
+          {{#if suspended}}<span class="label label-warning">Suspended</span>{{else}}<span class="label label-success">Active</span> 
+          {{!-- TODO add a button to suspend or unsuspend a user --}}
         </td>
         <td class="created">
           {{created_at}}

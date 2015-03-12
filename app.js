@@ -10,10 +10,12 @@
       'app.activated':'onActivated',
       // override tabs
       'click .tab':'tabClicked',
-
+      // macros
       'click .activate_macro':'activateMacro',
       'click button.filter_macros':'filterMacros',
-
+      // users
+      'click button.filter_users':'filterUsers',
+      // sessions
       'click button.kill_session':'killSession'
     },
     requests: {
@@ -119,6 +121,27 @@
       }
       
     },
+    filterUsers: function(e) {
+      if(e) {e.preventDefault();}
+      // var sort = this.$('select.sort').val();
+      var filter = this.$('select.filter').val();
+      this.filteredUsers =  this.users;// TODO -for when sorting is added- _.sortBy(this.macros, sort).reverse();
+      if(filter == 'active') {
+        this.filteredUsers = _.filter(this.filteredUsers, function(user) {
+          return !macro.suspended;
+        });
+      } else if(filter == 'suspended') {
+        this.filteredUsers = _.filter(this.filteredUsers, function(user) {
+          return user.suspended;
+        });
+      }
+      if (this.tab == 'users') {
+        this.switchTo('users', {
+          users: this.filteredUsers
+        });
+      }
+    },
+
     // Agents
     loadAgents: function() {
       this.$('div.filters').hide();
