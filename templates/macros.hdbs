@@ -23,7 +23,7 @@
           {{updated_at}}
         </td>
         <td class="active">
-          <button data-activate-link="/rules/{{id}}/activate" data-activated="{{#if active}}{{active}}{{else}}false{{/if}}" class="btn activate activate_macro">
+          <button data-activate-link="/rules/{{id}}/activate" data-activated="{{#if active}}{{active}}{{else}}false{{/if}}" class="btn {{#if active}}btn-warning{{else}}btn-success{{/if}} activate activate_macro">
             {{#if active}}
               Deactivate
             {{else}}

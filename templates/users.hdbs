@@ -31,7 +31,7 @@
           {{/each}}
         </td>
         <td class="active">
-          {{#if suspended}}<span class="label label-warning">Suspended</span>{{else}}<span class="label label-success">Active</span> 
+          {{#if suspended}}<span class="label label-important">Suspended</span>{{else}}<span class="label label-success">Active</span>{{/if}}
           {{!-- TODO add a button to suspend or unsuspend a user --}}
         </td>
         <td class="created">

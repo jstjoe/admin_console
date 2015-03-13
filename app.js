@@ -90,7 +90,8 @@
     },
     // Users
     loadUsers: function() {
-      this.$('div.filters').hide();
+      this.$('div.filters').html( this.renderTemplate('_user_filters') );
+      this.$('div.filters').show();
       // call paginate helper
       var startDate;
       var users = this._paginate({

@@ -9,7 +9,7 @@
     <select class="filter">
       <option>-</option>
       <option value="active">Active</option>
-      <option value="inactive">Suspended</option>
+      <option value="suspended">Suspended</option>
     </select>
   </label>
   <button class="btn btn-primary filter_users pull-right">Go</button>
