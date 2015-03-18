@@ -129,7 +129,7 @@
       this.filteredUsers =  this.users;// TODO -for when sorting is added- _.sortBy(this.macros, sort).reverse();
       if(filter == 'active') {
         this.filteredUsers = _.filter(this.filteredUsers, function(user) {
-          return !macro.suspended;
+          return !user.suspended;
         });
       } else if(filter == 'suspended') {
         this.filteredUsers = _.filter(this.filteredUsers, function(user) {
