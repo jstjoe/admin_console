@@ -8,6 +8,6 @@
   "defaultLocale": "en",
   "private": true,
   "location": ["nav_bar"],
-  "version": "0.7.1",
+  "version": "0.8.1",
   "frameworkVersion": "1.0"
 }

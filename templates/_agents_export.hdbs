@@ -1,3 +1,3 @@
-Name,Tags,Created,Updated
-{{#agents}}"{{name}}","{{tags}}","{{created_at}}","{{updated_at}}"
+Name,Tags,Groups,Created,Updated
+{{#agents}}"{{name}}","{{#tags}}{{this}}{{#unless @last}}, {{/unless}}{{/tags}}","{{#groups}}{{name}}{{#unless @last}}, {{/unless}}{{/groups}}","{{created_at}}","{{updated_at}}"
 {{/agents}}

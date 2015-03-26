@@ -15,6 +15,8 @@
       'click button.filter_macros':'filterMacros',
       // users
       'click button.filter_users':'filterUsers',
+      // agents
+      'click button.filter_agents':'filterAgents',
       // sessions
       'click button.kill_session':'killSession'
     },
@@ -145,7 +147,8 @@
 
     // Agents
     loadAgents: function() {
-      this.$('div.filters').hide();
+      this.$('div.filters').html( this.renderTemplate('_agent_filters') );
+      this.$('div.filters').show();
       // call paginate helper
       var startDate;
       var results = this._paginate({
@@ -220,6 +223,37 @@
       }
       
     },
+
+
+    filterAgents: function(e) {
+      if(e) {e.preventDefault();}
+      // var sort = this.$('select.sort').val();
+      var filter = this.$('select.filter').val();
+      this.filteredAgents =  this.agents;// TODO -for when sorting is added- _.sortBy(this.macros, sort).reverse();
+      if(filter == 'active') {
+        this.filteredAgents = _.filter(this.filteredAgents, function(agent) {
+          return !agent.suspended;
+        });
+      } else if(filter == 'suspended') {
+        this.filteredAgents = _.filter(this.filteredAgents, function(agent) {
+          return agent.suspended;
+        });
+      }
+      
+      var data = this.renderTemplate('_agents_export', {
+        agents: this.filteredAgents
+      });
+      var file = new File([data], 'agents.csv');
+      var url = URL.createObjectURL(file);
+      console.log('filtering');
+      if (this.tab == 'agents') {
+        this.switchTo('agents', {
+          agents: this.filteredAgents,
+          export_url: url
+        });
+      }
+    },
+
 
     loadMacros: function() {
       // call paginate helper
