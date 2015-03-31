@@ -6,6 +6,7 @@
         <th>Name</th>
         <th>Groups</th>
         <th>Tags</th>
+        <th>Status</th>
         <th>Created</th>
         <th>Updated</th>
       </tr>
@@ -34,6 +35,10 @@
           {{#each tags}}
               <span class="label">{{this}}</span>
           {{/each}}
+        </td>
+        <td class="active">
+          {{#if suspended}}<span class="label label-important">Suspended</span>{{else}}<span class="label label-success">Active</span>{{/if}}
+          {{!-- TODO add a button to suspend or unsuspend a user --}}
         </td>
         <td class="created">
           {{created_at}}
