@@ -23,11 +23,11 @@
           {{updated_at}}
         </td>
         <td class="active">
-          <button data-activate-link="/rules/{{id}}/activate" data-activated="{{#if active}}{{active}}{{else}}false{{/if}}" class="btn {{#if active}}btn-warning{{else}}btn-success{{/if}} activate activate_macro">
+          <button data-activate-link="/rules/{{id}}/activate" data-activated="{{#if active}}{{active}}{{else}}false{{/if}}" class="btn {{#if active}}red-button{{else}}green-button{{/if}} activate activate_macro">
             {{#if active}}
-              Deactivate
+              <span class="icon-ok"></span> Active
             {{else}}
-              Activate
+              <span class="icon-remove"></span> Inactive
             {{/if}}
           </button>
         </td>
@@ -35,9 +35,6 @@
       {{/each}}
     </tbody>
   </table>
-  {{!-- <a download="macros.csv" href="data:application/octet-stream,ID%2CTitle%2CAuthor%2CAnswer%2CCommunity%2CVote%20Score%2CVote%20Count%2CAnswer%20Count%2CFollower%20Count%2CCreated%2CUpdated%2CDetails%0A{{#encodedMacros}}#{{id}}%2C{{title}}%2C{{author}}%2C{{#if accepted_answer_id}}{{accepted_answer_id}}{{else}}-{{/if}}%2C{{community}}%2C{{vote_sum}}%2C{{vote_count}}%2C{{answer_count}}%2C{{follower_count}}%2C{{created_at}}%2C{{updated_at}}%2C%22{{details}}%22%0A{{/encodedMacros}}" class="btn pull-right">
-    <i class="icon-download"></i> Download CSV
-  </a> --}}
   <br><br>
 
 </div>

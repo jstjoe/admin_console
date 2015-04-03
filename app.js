@@ -115,11 +115,17 @@
     parseUsers: function(users) {
       // default sort
       this.users = this.convertDates( _.sortBy(users, 'created_at' ) );
-      // TODO build export
+      // create file URL
+      var data = this.renderTemplate('_users_export', {
+        users: this.users
+      });
+      var file = new File([data], 'users.csv');
+      var url = URL.createObjectURL(file);
 
       if (this.tab == 'users') {
         this.switchTo('users', {
-          users: this.users
+          users: this.users,
+          export_url: url
         });
       }
       
@@ -317,10 +323,10 @@
       // this.$('button[data-activate-link="' + link + '"]').html(spinner);
       this.ajax('activate', link).done(function(data) {
         if(e.currentTarget.dataset.activated == 'true') {
-          this.$('button[data-activate-link="' + link + '"]').html('Activate');
+          this.$('button[data-activate-link="' + link + '"]').html('<span class="icon-remove"></span> Inactive');
           this.$('button[data-activate-link="' + link + '"]').attr('data-activated', 'false');
         } else {
-          this.$('button[data-activate-link="' + link + '"]').html('Deactivate');
+          this.$('button[data-activate-link="' + link + '"]').html('<span class="icon-ok"></span> Active');
           this.$('button[data-activate-link="' + link + '"]').attr('data-activated', 'true');
         }
       });

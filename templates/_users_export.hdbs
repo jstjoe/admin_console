@@ -1,0 +1,2 @@
+Name,Tags,Status,Created,Updated
+{{#each users}}"{{name}}","{{#each tags}}{{this}}{{#unless @last}},{{/unless}}{{/each}}","{{#if suspended}}Suspended{{else}}Active{{/if}}","{{created_at}}","{{updated_at}}"{{/each}}
