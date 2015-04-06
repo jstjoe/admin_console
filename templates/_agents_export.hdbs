@@ -1,3 +1,4 @@
-Name,Tags,Groups,Status,Created,Updated
-{{#agents}}"{{name}}","{{#tags}}{{this}}{{#unless @last}}, {{/unless}}{{/tags}}","{{#groups}}{{name}}{{#unless @last}}, {{/unless}}{{/groups}}",{{#if suspended}}"Suspended"{{else}}"Active"{{/if}},"{{created_at}}","{{updated_at}}"
+Name,Role,Tags,Groups,Status,Created,Updated
+{{#agents}}"{{name}}","{{role}}","{{#tags}}{{this}}{{#unless @last}}, {{/unless}}{{/tags}}","{{#groups}}{{name}}{{#unless @last}}, {{/unless}}{{/groups}}",{{#if suspended}}"Suspended"{{else}}"Active"{{/if}},"{{created_at}}","{{updated_at}}"
 {{/agents}}
+{{!-- TODO: add Custom Role support: conditional on having a custom role ID --}}

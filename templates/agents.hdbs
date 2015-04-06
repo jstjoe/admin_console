@@ -4,6 +4,7 @@
       <tr class="table_header">
         <th>Photo</th>
         <th>Name</th>
+        <th>Role</th>
         <th>Groups</th>
         <th>Tags</th>
         <th>Status</th>
@@ -26,6 +27,10 @@
         <td class="name">
           <a href="/agent/users/{{id}}">{{name}}</a>
         </td>
+        <td class="role">
+          {{role}}
+        </td>
+        {{!-- TODO: add Custom Role support: conditional on having a custom role ID --}}
         <td class="groups">
           {{#groups}}
             <span class="label">{{this.name}}</span>
