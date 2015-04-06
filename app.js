@@ -33,7 +33,12 @@
       },
       getGroupMemberships: function(page) {
         return {
-          url: helpers.fmt('/api/v2/group_memberships.json', page)
+          url: helpers.fmt('/api/v2/group_memberships.json?page=%@', page)
+        };
+      },
+      getCustomRoles: function(page) {
+        return {
+          url: helpers.fmt('/api/v2/custom_roles.json?page=%@', page)
         };
       },
       getMacros: function(page) {
@@ -61,7 +66,7 @@
 
     onActivated: function() {
       this.tab = 'agents';
-      this.loadAgents();
+      this.agentTab();
     },
 
     tabClicked: function(e) {
@@ -77,7 +82,7 @@
         this.loadUsers();
       } else if (tab == 'agents') {
         this.tab = 'agents';
-        this.loadAgents();
+        this.agentTab();
       } else if(tab == 'macros') {
         this.tab = 'macros';
         this.loadMacros();
@@ -152,9 +157,27 @@
     },
 
     // Agents
-    loadAgents: function() {
-      this.$('div.filters').html( this.renderTemplate('_agent_filters') );
+    agentTab: function() {
+      var formData = [
+        {
+          name: "Test",
+          class: "test-includable",
+          checked: true
+        },
+        {
+          name: "Test 2",
+          class: "test-includable-2",
+          checked: false
+        }
+      ];
+      this.$('div.filters').html( this.renderTemplate('_agent_filters', {
+        includables: formData
+      }));
       this.$('div.filters').show();
+      this.$('div.dotted').hide();
+      // this.loadAgents();
+    },
+    loadAgents: function(applyFilters) {
       // call paginate helper
       var startDate;
       var results = this._paginate({
@@ -166,20 +189,16 @@
       // handle the response once the promise resolves
       results.done(_.bind(function(results){
         if(results.length !== 0) {
-          // do something with results
-          console.dir(results.entity);
-          console.dir(results.sideload);
-
-          this.matchGroups(results.entity, results.sideload);
+          this.matchGroups(results.entity, results.sideload, applyFilters);
         } else {
-          // hide the loader and show an error
+          // TODO hide the loader and show an error
         }
       }, this));
 
 
 
     },
-    matchGroups: function(agents, groups) {
+    matchGroups: function(agents, groups, applyFilters) {
       // handle groups sideload
       var memberships = this._paginate({
         request: 'getGroupMemberships',
@@ -205,13 +224,40 @@
           console.dir(agents);
 
           // when done
-          this.parseAgents(agents);
+          this.matchRoles(agents, applyFilters);
         } else {
           // hide the loader and show an error
         }
       }, this));
     },
-    parseAgents: function(agents) {
+    matchRoles: function(agents, applyFilters) {
+      // handle roles sideload
+      var customRoles = this._paginate({
+        request: 'getCustomRoles',
+        entity: 'custom_roles',
+        page: 1
+      });
+      customRoles.done(_.bind(function(response){
+        console.dir(response.entity);
+        var roles = response.entity;
+        if(roles) {
+          _.each(agents, function(agent) {
+            // nest the role object in the agent object
+            agent.customRole = _.find(roles, function(role) {
+              return role.id == agent.custom_role_id;
+            });
+          }.bind(this));
+          console.dir(agents);
+
+          // when done
+          this.parseAgents(agents, applyFilters);
+        } else {
+          // if there are no custom roles
+        }
+      }, this));
+      
+    },
+    parseAgents: function(agents, applyFilters) {
       // default sort
       this.agents = this.convertDates( _.sortBy(agents, 'created_at' ) );
       // create file URL
@@ -220,19 +266,25 @@
       });
       var file = new File([data], 'agents.csv');
       var url = URL.createObjectURL(file);
-
-      if (this.tab == 'agents') {
+      if (applyFilters) { // send it to the filter function first
+        this.filterAgents();
+      } else if (this.tab == 'agents') {
         this.switchTo('agents', {
           agents: this.agents,
           export_url: url
         });
       }
-      
     },
 
 
     filterAgents: function(e) {
       if(e) {e.preventDefault();}
+      if (!this.agents) {
+        this.loadAgents(true);
+        return;
+      }
+      var includables = this.$('input.include:checked');
+      console.dir(includables);
       // var sort = this.$('select.sort').val();
       var filter = this.$('select.filter').val();
       this.filteredAgents =  this.agents;// TODO -for when sorting is added- _.sortBy(this.macros, sort).reverse();
@@ -255,7 +307,8 @@
       if (this.tab == 'agents') {
         this.switchTo('agents', {
           agents: this.filteredAgents,
-          export_url: url
+          export_url: url,
+          includables: this.includables
         });
       }
     },

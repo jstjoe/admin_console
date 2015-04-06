@@ -5,12 +5,23 @@
       <option value="created">created</option>
     </select>
   </label> --}}
-  <label>Filter to: 
-    <select class="filter">
-      <option>-</option>
-      <option value="active">Active</option>
-      <option value="suspended">Suspended</option>
-    </select>
-  </label>
+  <span class="filters">
+    <label>Filter to: 
+      <select class="filter">
+        <option>-</option>
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+      </select>
+    </label>
+  </span>
+  <span class="includables">
+    <span>Include: </span>
+    {{#each includables}}
+    <label>
+      {{name}}
+      <input type="checkbox" class="include {{class}}" {{#if checked}}checked{{/if}}>
+    </label>
+    {{/each}}
+  </span>
   <button class="btn btn-primary filter_agents pull-right">Go</button>
 </form>

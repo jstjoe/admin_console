@@ -34,3 +34,10 @@ tr.macro > td.active {
   max-height: 80px;
   max-width: 80px;
 }
+td.role {
+  text-transform: capitalize;
+}
+// Filter sections
+span.includables {
+  margin-left: 20px;
+}

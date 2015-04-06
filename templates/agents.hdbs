@@ -10,6 +10,9 @@
         <th>Status</th>
         <th>Created</th>
         <th>Updated</th>
+        {{#each includables}}
+          <th>{{name}}</th>
+        {{/each}}
       </tr>
     </thead>
     <tbody>
@@ -28,7 +31,7 @@
           <a href="/agent/users/{{id}}">{{name}}</a>
         </td>
         <td class="role">
-          {{role}}
+          {{#if custom_role_id}}{{customRole.name}}{{else}}{{role}}{{/if}}
         </td>
         {{!-- TODO: add Custom Role support: conditional on having a custom role ID --}}
         <td class="groups">
@@ -51,6 +54,9 @@
         <td class="updated">
           {{updated_at}}
         </td>
+        {{#each ./includables}}
+          <td>{{name}}</td>
+        {{/each}}
       </tr>
       {{/each}}
     </tbody>
